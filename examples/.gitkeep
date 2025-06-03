@@ -1,0 +1,3 @@
+# This file ensures the examples/ directory is tracked by Git
+# This directory will contain example CMake projects and their Buck2 migrations
+# Remove this file when adding actual examples

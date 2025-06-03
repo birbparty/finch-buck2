@@ -1,0 +1,3 @@
+# This file ensures the tools/ directory is tracked by Git
+# This directory will contain utility scripts and tools
+# Remove this file when adding actual tools and scripts
