@@ -1,0 +1,16 @@
+name: "simple-library"
+description: "Basic static library with single source and header"
+features: ["basic-library", "include-directories"]
+difficulty: "simple"
+expected_targets: 1
+expected_duration_ms: 100
+should_build: true
+expected_files:
+  - "BUCK"
+expected_rules:
+  - type: "cxx_library"
+    name: "calculator"
+    srcs_count: 1
+    headers_count: 1
+expected_dependencies: []
+known_issues: []

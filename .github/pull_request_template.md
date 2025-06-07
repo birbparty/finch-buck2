@@ -6,6 +6,7 @@
 Provide a brief description of the changes in this pull request.
 
 **Related Issue(s):**
+
 - Fixes #(issue number)
 - Relates to #(issue number)
 
@@ -35,6 +36,7 @@ Please mark the relevant option(s):
 - [ ] No tests needed for this change
 
 **Test scenarios covered:**
+
 - [ ] Simple CMake projects
 - [ ] Complex multi-target projects
 - [ ] CPM.cmake dependencies
@@ -42,6 +44,7 @@ Please mark the relevant option(s):
 - [ ] Edge cases and error handling
 
 **Commands run for testing:**
+
 ```bash
 # List the commands you used to test your changes
 # For example:
@@ -64,9 +67,10 @@ If this PR affects migration functionality, please test with:
 - [ ] Cross-compilation projects
 
 **Test projects used:**
-- 
-- 
-- 
+-
+
+-
+-
 
 ## 📚 Documentation
 
@@ -81,6 +85,7 @@ If this PR affects migration functionality, please test with:
 **Before submitting this PR, please ensure:**
 
 ### Code Quality
+
 - [ ] My code follows the project's style guidelines
 - [ ] I have performed a self-review of my own code
 - [ ] I have commented my code, particularly in hard-to-understand areas
@@ -89,18 +94,21 @@ If this PR affects migration functionality, please test with:
 - [ ] New and existing unit tests pass locally with my changes
 
 ### Standards
+
 - [ ] Code is C++17 compatible
 - [ ] No memory leaks introduced
 - [ ] Error handling is appropriate
 - [ ] Thread safety considered (if applicable)
 
 ### Git Hygiene
+
 - [ ] My commits follow the conventional commit format
 - [ ] I have rebased my branch on the latest main
 - [ ] My branch has a clear, descriptive name
 - [ ] Commit messages are clear and descriptive
 
 ### Integration
+
 - [ ] I have tested the changes on multiple platforms (if applicable)
 - [ ] The changes work with different CMake versions
 - [ ] The changes work with different Buck2 versions
@@ -109,6 +117,7 @@ If this PR affects migration functionality, please test with:
 ## 🔍 Code Review Focus Areas
 
 **Please pay special attention to:**
+
 - [ ] Algorithm correctness
 - [ ] Error handling
 - [ ] Performance implications
@@ -140,6 +149,7 @@ For changes affecting migration logic:
 **Before/After comparisons (if applicable):**
 
 **Example usage:**
+
 ```bash
 # Show example commands or output demonstrating the change
 ```
@@ -147,13 +157,15 @@ For changes affecting migration logic:
 ## 🤔 Questions for Reviewers
 
 **Specific questions or areas where you'd like feedback:**
-- 
-- 
-- 
+-
+
+-
+-
 
 ## 🚀 Deployment Notes
 
 **Any special considerations for deployment:**
+
 - [ ] No special deployment considerations
 - [ ] Database changes required
 - [ ] Configuration changes required

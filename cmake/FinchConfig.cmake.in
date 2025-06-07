@@ -1,0 +1,28 @@
+# FinchConfig.cmake
+# Config file for the finch-buck2 package
+# It defines the following variables:
+#  finch_FOUND        - System has finch
+#  finch_INCLUDE_DIRS - The finch include directories
+#  finch_LIBRARIES    - The libraries needed to use finch
+#  finch_VERSION      - The version of finch
+
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+# Find required dependencies
+find_dependency(fmt REQUIRED)
+find_dependency(spdlog REQUIRED)
+find_dependency(nlohmann_json REQUIRED)
+
+# Include the targets file
+include("${CMAKE_CURRENT_LIST_DIR}/finch-targets.cmake")
+
+# Set the include directories
+set(finch_INCLUDE_DIRS "@CMAKE_INSTALL_FULL_INCLUDEDIR@")
+
+# Set the libraries
+set(finch_LIBRARIES finch::core)
+
+# Check that all required components are found
+check_required_components(finch)

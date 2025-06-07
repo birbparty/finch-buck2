@@ -1,0 +1,26 @@
+# Platform definitions for finch-buck2
+
+# Platform-specific configuration settings
+config_setting(
+    name = "linux",
+    constraint_values = [
+        "config//os/constraints:linux",
+    ],
+    visibility = ["PUBLIC"],
+)
+
+config_setting(
+    name = "macos",
+    constraint_values = [
+        "config//os/constraints:macos",
+    ],
+    visibility = ["PUBLIC"],
+)
+
+config_setting(
+    name = "windows",
+    constraint_values = [
+        "config//os/constraints:windows",
+    ],
+    visibility = ["PUBLIC"],
+)

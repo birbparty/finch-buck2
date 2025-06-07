@@ -36,9 +36,9 @@ assignees: ''
 
 **Key Dependencies:**
 List the main libraries your project depends on:
-- 
-- 
-- 
+-
+-
+-
 
 ### 🔧 CMake Configuration
 

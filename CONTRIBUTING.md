@@ -26,12 +26,14 @@ We appreciate all forms of contribution:
 ### Development Setup
 
 1. **Fork and Clone**
+
    ```bash
    git clone https://github.com/YOUR_USERNAME/finch-buck2.git
    cd finch-buck2
    ```
 
 2. **Build the Project**
+
    ```bash
    mkdir build && cd build
    cmake .. -DCMAKE_BUILD_TYPE=Debug
@@ -39,6 +41,7 @@ We appreciate all forms of contribution:
    ```
 
 3. **Run Tests**
+
    ```bash
    ctest --verbose
    ```
@@ -92,6 +95,7 @@ Fixes #123
 ```
 
 **Types:**
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -101,6 +105,7 @@ Fixes #123
 - `chore`: Maintenance tasks
 
 **Examples:**
+
 ```
 feat(parser): add support for CMake target_link_libraries
 

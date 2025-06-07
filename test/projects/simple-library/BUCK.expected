@@ -1,0 +1,11 @@
+load("@prelude//cxx:cxx.bzl", "cxx_library", "cxx_binary", "cxx_test")
+
+cxx_library(
+    name = "calculator",
+    srcs = [
+        "src/calculator.cpp",
+    ],
+    headers = glob(["**/*.h", "**/*.hpp"]),
+    visibility = ["PUBLIC"],
+    header_namespace = "calculator",
+)

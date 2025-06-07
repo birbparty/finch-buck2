@@ -1,0 +1,220 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build-and-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        build_type: [Debug, Release]
+        compiler:
+          - { cc: gcc, cxx: g++ }
+          - { cc: clang, cxx: clang++ }
+        exclude:
+          # Windows doesn't have gcc in the default environment
+          - os: windows-latest
+            compiler: { cc: gcc, cxx: g++ }
+          # Reduce matrix size for faster CI
+          - os: macos-latest
+            build_type: Debug
+            compiler: { cc: gcc, cxx: g++ }
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: Install system dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build clang-tidy clang-format
+          if [ "${{ matrix.compiler.cc }}" = "clang" ]; then
+            sudo apt-get install -y clang-14 clang++-14
+            echo "CC=clang-14" >> $GITHUB_ENV
+            echo "CXX=clang++-14" >> $GITHUB_ENV
+          else
+            sudo apt-get install -y gcc-11 g++-11
+            echo "CC=gcc-11" >> $GITHUB_ENV
+            echo "CXX=g++-11" >> $GITHUB_ENV
+          fi
+
+      - name: Install system dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install ninja llvm
+          if [ "${{ matrix.compiler.cc }}" = "clang" ]; then
+            echo "CC=$(brew --prefix llvm)/bin/clang" >> $GITHUB_ENV
+            echo "CXX=$(brew --prefix llvm)/bin/clang++" >> $GITHUB_ENV
+          else
+            # Use system GCC on macOS (which is actually clang)
+            echo "CC=gcc" >> $GITHUB_ENV
+            echo "CXX=g++" >> $GITHUB_ENV
+          fi
+
+      - name: Install system dependencies (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          choco install ninja
+          echo "CC=clang" >> $env:GITHUB_ENV
+          echo "CXX=clang++" >> $env:GITHUB_ENV
+
+      - name: Setup CMake
+        uses: jwlawson/actions-setup-cmake@v1.14
+        with:
+          cmake-version: "3.20.x"
+
+      - name: Cache CMake build directory
+        uses: actions/cache@v3
+        with:
+          path: |
+            build
+            !build/**/*.o
+            !build/**/*.obj
+          key: ${{ runner.os }}-${{ matrix.compiler.cc }}-${{ matrix.build_type }}-${{ hashFiles('**/CMakeLists.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.compiler.cc }}-${{ matrix.build_type }}-
+            ${{ runner.os }}-${{ matrix.compiler.cc }}-
+            ${{ runner.os }}-
+
+      - name: Configure CMake
+        run: |
+          cmake -B build \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DCMAKE_C_COMPILER=${{ env.CC }} \
+            -DCMAKE_CXX_COMPILER=${{ env.CXX }} \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+            -DBUCK2_CPM_BUILD_TESTS=ON \
+            -DBUCK2_CPM_ENABLE_WARNINGS=ON
+
+      - name: Build
+        run: cmake --build build --config ${{ matrix.build_type }} --parallel
+
+      - name: Test
+        working-directory: build
+        run: ctest -C ${{ matrix.build_type }} --output-on-failure --parallel 2
+
+      - name: Run clang-tidy (Linux only)
+        if: runner.os == 'Linux' && matrix.compiler.cc == 'clang' && matrix.build_type == 'Debug'
+        run: |
+          clang-tidy-14 \
+            $(find src include -name "*.cpp" -o -name "*.hpp" | grep -v dummy) \
+            -p build \
+            --config-file=.clang-tidy
+
+  coverage:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build gcc-11 g++-11 lcov
+
+      - name: Setup CMake
+        uses: jwlawson/actions-setup-cmake@v1.14
+        with:
+          cmake-version: "3.20.x"
+
+      - name: Configure CMake with Coverage
+        run: |
+          cmake -B build \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_C_COMPILER=gcc-11 \
+            -DCMAKE_CXX_COMPILER=g++-11 \
+            -DBUCK2_CPM_BUILD_TESTS=ON \
+            -DBUCK2_CPM_ENABLE_COVERAGE=ON \
+            -DCMAKE_CXX_FLAGS="--coverage -fprofile-arcs -ftest-coverage"
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Test with Coverage
+        working-directory: build
+        run: |
+          ctest --output-on-failure --parallel 2
+
+      - name: Generate Coverage Report
+        run: |
+          lcov --directory . --capture --output-file coverage.info
+          lcov --remove coverage.info '/usr/*' --output-file coverage.info
+          lcov --remove coverage.info '*/buck2/*' --output-file coverage.info
+          lcov --remove coverage.info '*/build/*' --output-file coverage.info
+          lcov --remove coverage.info '*/test/*' --output-file coverage.info
+          lcov --list coverage.info
+
+      - name: Upload Coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage.info
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+
+  static-analysis:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build clang-14 clang++-14 clang-tidy-14 clang-format-14
+
+      - name: Setup CMake
+        uses: jwlawson/actions-setup-cmake@v1.14
+        with:
+          cmake-version: "3.20.x"
+
+      - name: Configure CMake
+        run: |
+          cmake -B build \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_C_COMPILER=clang-14 \
+            -DCMAKE_CXX_COMPILER=clang++-14 \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+            -DBUCK2_CPM_BUILD_TESTS=ON
+
+      - name: Check formatting
+        run: |
+          find src include -name "*.cpp" -o -name "*.hpp" | xargs clang-format-14 --dry-run --Werror
+
+      - name: Build (for compile_commands.json)
+        run: cmake --build build --parallel
+
+      - name: Run static analysis
+        run: |
+          # Only analyze our source files, not dependencies
+          find src include -name "*.cpp" -o -name "*.hpp" | \
+          grep -v dummy | \
+          xargs clang-tidy-14 -p build --config-file=.clang-tidy

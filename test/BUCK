@@ -1,0 +1,32 @@
+# Test configuration for finch-buck2
+
+load("@prelude//cxx:cxx.bzl", "cxx_test")
+
+# Main test executable
+cxx_test(
+    name = "finch-tests",
+    srcs = glob(["**/*_test.cpp"]),
+    compiler_flags = ["-std=c++20"],
+    deps = [
+        "//:finch-core",
+        "//buck2/third_party:gtest",
+        "//buck2/third_party:gtest_main",
+        "//buck2/third_party:gmock",
+    ],
+)
+
+# Individual test targets for granular execution
+[
+    cxx_test(
+        name = "test_" + test_file.replace("/", "_").replace(".cpp", ""),
+        srcs = [test_file],
+        compiler_flags = ["-std=c++20"],
+        deps = [
+            "//:finch-core",
+            "//buck2/third_party:gtest",
+            "//buck2/third_party:gtest_main",
+            "//buck2/third_party:gmock",
+        ],
+    )
+    for test_file in glob(["**/*_test.cpp"])
+]

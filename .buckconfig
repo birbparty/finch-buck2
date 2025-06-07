@@ -1,0 +1,11 @@
+[cells]
+root = .
+prelude = buck2/prelude
+config = buck2/prelude
+toolchains = buck2/prelude
+fbsource = buck2/prelude
+fbcode = buck2/prelude
+buck = buck2/prelude
+
+[parser]
+target_platform_detector_spec = target:root//...->prelude//platforms:default

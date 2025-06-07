@@ -1,0 +1,73 @@
+# Buck2-CPM Project Configuration
+# This file configures the development environment and build settings for buck2-cpp-cpm
+
+[project]
+name = "buck2-cpp-cpm"
+version = "0.1.0"
+description = "CMake to Buck2 migration tool"
+
+[parsing]
+# CMake parsing behavior
+strict_mode = false
+allow_unknown_functions = true
+max_recursion_depth = 100
+enable_variable_tracking = true
+
+[generation]
+# Buck2 code generation settings
+target_platform = "linux-x86_64"
+output_format = "buck2"
+parallel_generation = true
+optimize_dependencies = true
+generate_comments = true
+
+[plugins]
+# Plugin system configuration
+enabled = ["cpm", "conan", "vcpkg"]
+search_paths = [
+    "~/.local/lib/finch/plugins",
+    "./plugins"
+]
+auto_discover = true
+
+[logging]
+# Logging configuration
+level = "info"
+format = "structured"
+output = "stderr"
+enable_colors = true
+timestamp_format = "iso8601"
+
+[development]
+# Development-specific settings
+enable_debug_output = false
+profile_performance = false
+validate_intermediate_results = true
+cache_parse_results = true
+
+[ci]
+# Continuous integration settings
+fail_fast = false
+parallel_jobs = 2
+coverage_threshold = 80
+enable_benchmarks = false
+
+[tools]
+# Tool-specific configuration
+clang_format = "clang-format"
+clang_tidy = "clang-tidy"
+cmake = "cmake"
+ninja = "ninja"
+
+[analysis]
+# Static analysis configuration
+enable_warnings = true
+warnings_as_errors = false
+enable_sanitizers = true
+enable_coverage = false
+
+[performance]
+# Performance tuning
+cache_size_mb = 256
+worker_threads = 0  # 0 = auto-detect
+memory_limit_mb = 1024

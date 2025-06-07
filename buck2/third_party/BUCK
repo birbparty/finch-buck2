@@ -1,0 +1,65 @@
+# Third-party dependencies for finch-buck2
+
+# For now, we'll create placeholders for the dependencies
+# In a real scenario, these would be fetched and built
+
+# fmt - Modern formatting library (placeholder)
+cxx_library(
+    name = "fmt",
+    srcs = [],
+    headers = [],
+    header_only = True,
+    visibility = ["PUBLIC"],
+)
+
+# CLI11 - Command line parser (placeholder)
+cxx_library(
+    name = "CLI11",
+    srcs = [],
+    headers = [],
+    header_only = True,
+    visibility = ["PUBLIC"],
+)
+
+# nlohmann_json - JSON for Modern C++ (placeholder)
+cxx_library(
+    name = "nlohmann_json",
+    srcs = [],
+    headers = [],
+    header_only = True,
+    visibility = ["PUBLIC"],
+)
+
+# spdlog - Fast C++ logging library (placeholder)
+cxx_library(
+    name = "spdlog",
+    srcs = [],
+    headers = [],
+    header_only = True,
+    visibility = ["PUBLIC"],
+)
+
+# GoogleTest - Unit testing framework (placeholder)
+cxx_library(
+    name = "gtest",
+    srcs = [],
+    headers = [],
+    header_only = True,
+    visibility = ["PUBLIC"],
+)
+
+cxx_library(
+    name = "gtest_main",
+    srcs = [],
+    headers = [],
+    header_only = True,
+    visibility = ["PUBLIC"],
+)
+
+cxx_library(
+    name = "gmock",
+    srcs = [],
+    headers = [],
+    header_only = True,
+    visibility = ["PUBLIC"],
+)
